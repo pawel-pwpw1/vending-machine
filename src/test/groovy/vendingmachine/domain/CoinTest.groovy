@@ -5,9 +5,6 @@ import spock.lang.Unroll
 
 import static vendingmachine.domain.Coin.*
 
-/**
- * @author bartosz walacik
- */
 class CoinTest extends Specification {
     @Unroll
     def "#coin should has value #expectedValue"(Coin coin, expectedValue) {

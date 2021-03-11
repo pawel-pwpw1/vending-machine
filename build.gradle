@@ -1,25 +1,26 @@
 plugins {
-    id 'java'
-    id 'groovy'
-    id 'idea'
+    id "java"
+    id "groovy"
+    id "idea"
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'log4j:log4j:1.2.17'
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.14'
-    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    implementation "log4j:log4j:1.2.17"
+    implementation "org.codehaus.groovy:groovy:3.0.7"
+    testImplementation platform("org.spockframework:spock-bom:2.0-M4-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
 
-    testRuntime 'cglib:cglib-nodep:3.2.6' // enables mocking of classes (in addition to interfaces)
-    testRuntime 'org.objenesis:objenesis:2.6' // enables mocking of classes without default constructor (together with CGLIB)
+    testRuntimeOnly "net.bytebuddy:byte-buddy:1.10.10"
+    testRuntimeOnly "org.objenesis:objenesis:3.1"
+}
+test {
+    useJUnitPlatform()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
-}

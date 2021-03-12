@@ -1,6 +1,7 @@
 package vendingmachine.domain
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class VendingMachineTest extends Specification {
 
@@ -14,13 +15,34 @@ class VendingMachineTest extends Specification {
         vendingMachine.coinReturnTray == [] as Set
     }
 
-    def "should reject pennies"() {
+    def 'should reject pennies'() {
         given:
         def vendingMachine = new VendingMachine()
+        def coin = new Coin(1, 1);
         when:
-        vendingMachine.insertCoins(1,1)
+        vendingMachine.insertCoin(coin)
         then:
         vendingMachine.balance.value == 0
-        vendingMachine.coinReturnTray == [Coin.PENNY] as Set
+        vendingMachine.coinReturnTray == [coin] as Set
+    }
+
+    @Unroll
+    def 'should accept coin with size: #size and weight: #weight'(weight, size, balance) {
+        given:
+        def vendingMachine = new VendingMachine()
+        def coin = new Coin(weight, size);
+        when:
+        vendingMachine.insertCoin(coin)
+        then:
+        vendingMachine.balance.value == balance
+        vendingMachine.coinReturnTray == [] as Set
+        vendingMachine.display == 'BALANCE ' + balance.toString()
+
+
+        where:
+        weight | size | balance
+        1      | 5    | 0.05
+        2      | 10   | 0.10
+        3      | 25   | 0.25
     }
 }

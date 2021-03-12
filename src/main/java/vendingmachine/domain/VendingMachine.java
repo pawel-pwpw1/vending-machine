@@ -1,43 +1,64 @@
 package vendingmachine.domain;
+
+import static vendingmachine.domain.Money.money;
+import static vendingmachine.domain.ValidCoin.DIME;
+import static vendingmachine.domain.ValidCoin.NICKEL;
+import static vendingmachine.domain.ValidCoin.QUARTER;
+
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import static vendingmachine.domain.Money.money;
 
 public class VendingMachine {
 
-    private Set<Coin> coinReturnTray;
+  private Money balance;
+  private final Set<Coin> coinReturnTray;
 
-    public VendingMachine() {
-        coinReturnTray = new HashSet<>();
+  public VendingMachine() {
+    coinReturnTray = new HashSet<>();
+    balance = money(0);
+  }
+
+  public String getDisplay() {
+    if (getBalance().isZero()) {
+      return "INSERT A COIN";
     }
 
-    public String getDisplay() {
-        if (getBalance().isZero()) {
-            return "INSERT A COIN";
-        }
+    return "BALANCE " + getBalance().toString();
+  }
 
-        return "zonk";
-    }
+  /**
+   * Current amount on display: sum of *valid* coins inserted, minus sold products, minus change
+   */
+  public Money getBalance() {
+    return balance;
+  }
 
-    /**
-     * Current amount on display:
-     * sum of *valid* coins inserted, minus sold products, minus change
-     */
-    public Money getBalance() {
-        return money(0);
-    }
+  /**
+   * @return unmodifiableSet
+   */
+  public Set<Coin> getCoinReturnTray() {
+    return Collections.unmodifiableSet(coinReturnTray);
+  }
 
-    /**
-     * @return unmodifiableSet
-     */
-    public Set<Coin> getCoinReturnTray() {
-        return Collections.unmodifiableSet(coinReturnTray);
+  public void insertCoin(Coin coin) {
+    if (isAcceptedCoin(coin)) {
+      balance = balance.add(getMoneyFor(coin).orElseThrow());
+    } else {
+      coinReturnTray.add(coin);
     }
+  }
 
-    public void insertCoins(int weight, int size) {
-        if (weight == Coin.PENNY.getWeight() && size == Coin.PENNY.getSize()) {
-            coinReturnTray.add(Coin.PENNY);
-        }
-    }
+  private boolean isAcceptedCoin(Coin coin) {
+    return isValidCoin(coin, NICKEL) || isValidCoin(coin, DIME) || isValidCoin(coin, QUARTER);
+  }
+
+  private boolean isValidCoin(Coin coin, ValidCoin validCoin) {
+    return coin.getWeight() == validCoin.getWeight() && coin.getSize() == validCoin.getSize();
+  }
+
+  private Optional<Money> getMoneyFor(Coin coin) {
+    return ValidCoin.getFor(coin.getWeight(), coin.getSize()).map(ValidCoin::getMoney);
+  }
 }

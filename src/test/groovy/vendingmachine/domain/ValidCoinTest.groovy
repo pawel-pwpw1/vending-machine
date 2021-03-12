@@ -3,11 +3,11 @@ package vendingmachine.domain
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static vendingmachine.domain.Coin.*
+import static ValidCoin.*
 
-class CoinTest extends Specification {
+class ValidCoinTest extends Specification {
     @Unroll
-    def "#coin should has value #expectedValue"(Coin coin, expectedValue) {
+    def "#coin should has value #expectedValue"(ValidCoin coin, expectedValue) {
         expect:
         coin.value == expectedValue
 
@@ -20,7 +20,7 @@ class CoinTest extends Specification {
     }
 
     @Unroll
-    def "#coin should has size #expectedSize"(Coin coin, expectedSize) {
+    def "#coin should has size #expectedSize"(ValidCoin coin, expectedSize) {
         expect:
         coin.size == expectedSize
 

@@ -1,15 +1,18 @@
 package vendingmachine.domain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import static vendingmachine.domain.Money.money;
 
 public class VendingMachine {
 
-    private Set<Coin> coinReturnTray;
+    private List<Coin> coinReturnTray;
+    private Money balance = Money.money(0);
 
     public VendingMachine() {
-        coinReturnTray = new HashSet<>();
+        coinReturnTray = new ArrayList<>();
     }
 
     public String getDisplay() {
@@ -17,7 +20,15 @@ public class VendingMachine {
             return "INSERT A COIN";
         }
 
-        return "zonk";
+        return "Total money: "+balance.toString();
+    }
+
+    public void insertCoin(Coin coin){
+        if(coin == Coin.PENNY){
+            coinReturnTray.add(coin);
+            return;
+        }
+        this.balance = balance.add(coin.getMoney());
     }
 
     /**
@@ -25,13 +36,13 @@ public class VendingMachine {
      * sum of *valid* coins inserted, minus sold products, minus change
      */
     public Money getBalance() {
-        return money(0);
+        return balance;
     }
 
     /**
      * @return unmodifiableSet
      */
-    public Set<Coin> getCoinReturnTray() {
-        return Collections.unmodifiableSet(coinReturnTray);
+    public List<Coin> getCoinReturnTray() {
+        return Collections.unmodifiableList(coinReturnTray);
     }
 }

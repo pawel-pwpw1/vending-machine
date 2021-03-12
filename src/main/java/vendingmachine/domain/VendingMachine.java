@@ -47,8 +47,7 @@ public class VendingMachine {
   private void prepareNextState() {
     if (display.equals("THANK YOU")) {
       clear();
-    }
-    if (!display.equals(balance.toString())) {
+    } else if (!display.equals(balance.toString())) {
       display = prepareDisplayFromBalance();
     }
   }

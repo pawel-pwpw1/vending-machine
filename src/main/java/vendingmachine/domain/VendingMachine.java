@@ -11,13 +11,14 @@ import static vendingmachine.domain.Money.money;
 public class VendingMachine {
 
   private final List<Coin> coinReturnTray;
-  private Money balance = money(0);
+  private Money balance;
 
   private Product product;
-  private String display = "INSERT A COIN";
+  private String display;
 
   public VendingMachine() {
     coinReturnTray = new ArrayList<>();
+    clear();
   }
 
   public Product getProduct() {
@@ -38,16 +39,18 @@ public class VendingMachine {
   }
 
   public String getDisplay() {
+    String actualDisplay = display;
+    prepareNextState();
+    return actualDisplay;
+  }
+
+  private void prepareNextState() {
     if (display.equals("THANK YOU")) {
       clear();
-      return "THANK YOU";
     }
     if (!display.equals(balance.toString())) {
-      String toReturn = display;
       display = prepareDisplayFromBalance();
-      return toReturn;
     }
-    return display;
   }
 
   /**

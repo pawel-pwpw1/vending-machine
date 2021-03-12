@@ -34,4 +34,7 @@ public class VendingMachine {
     public Set<Coin> getCoinReturnTray() {
         return Collections.unmodifiableSet(coinReturnTray);
     }
+
+    public void insertCoins(Integer integer1, Integer integer2) {
+    }
 }

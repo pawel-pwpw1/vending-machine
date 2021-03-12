@@ -18,4 +18,18 @@ class CoinTest extends Specification {
         DIME    | 0.1
         QUARTER | 0.25
     }
+
+    @Unroll
+    def "#coin should has size #expectedSize"(Coin coin, expectedSize) {
+        expect:
+        coin.size == expectedSize
+
+        where:
+        coin    | expectedSize
+        PENNY   | 1
+        NICKEL  | 5
+        DIME    | 10
+        QUARTER | 25
+    }
+
 }

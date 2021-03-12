@@ -13,4 +13,14 @@ class VendingMachineTest extends Specification {
         vendingMachine.balance.value == 0
         vendingMachine.coinReturnTray == [] as Set
     }
+
+    def "should reject pennies"() {
+        given:
+        def vendingMachine = new VendingMachine()
+        when:
+        vendingMachine.insertCoins(1,1)
+        then:
+        vendingMachine.balance.value == 0
+        vendingMachine.coinReturnTray == [Coin.PENNY] as Set
+    }
 }

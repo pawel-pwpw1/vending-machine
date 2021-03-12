@@ -80,4 +80,20 @@ class VendingMachineTest extends Specification {
         vendingMachine.coinReturnTray == [] as Set
         vendingMachine.display == 'INSERT A COIN'
     }
+
+    def 'should display PRICE if money is not enough'() {
+        given:
+        def product = COLA;
+        def initialBalance = 0.50;
+        def vendingMachine = new VendingMachine(new Money(initialBalance))
+
+        when:
+        vendingMachine.buy(product)
+
+        then:
+        vendingMachine.balance.value == initialBalance
+        vendingMachine.display == 'PRICE ' + product.price.toString()
+        vendingMachine.coinReturnTray == [] as Set
+        vendingMachine.display == 'BALANCE ' +  initialBalance
+    }
 }

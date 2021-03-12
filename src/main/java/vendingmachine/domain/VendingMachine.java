@@ -33,6 +33,12 @@ public class VendingMachine {
     } finally {
       if (display.equals("THANK YOU")) {
         display = "INSERT A COIN";
+      } else if (display.startsWith("PRICE")) {
+        if (this.balance.isZero()) {
+          display = "INSERT A COIN";
+        } else {
+          display = "BALANCE "+ this.balance.toString();
+        }
       }
     }
   }
@@ -76,6 +82,8 @@ public class VendingMachine {
     if (this.balance.subtract(product.getPrice()).getValue().compareTo(BigDecimal.ZERO) >= 0) {
       this.balance = this.balance.subtract(product.getPrice());
       this.display = "THANK YOU";
+    } else {
+      this.display = "PRICE " + product.getPrice().toString();
     }
   }
 }

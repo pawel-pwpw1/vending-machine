@@ -10,7 +10,7 @@ import static vendingmachine.domain.Money.money;
 
 public class VendingMachine {
 
-  private List<Coin> coinReturnTray;
+  private final List<Coin> coinReturnTray;
   private Money balance = money(0);
 
   public VendingMachine() {

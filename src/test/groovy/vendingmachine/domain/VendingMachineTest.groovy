@@ -5,42 +5,33 @@ import spock.lang.Specification
 import static vendingmachine.domain.Coin.*
 
 class VendingMachineTest extends Specification {
+    def vendingMachine;
+
+    void setup() {
+        vendingMachine = new VendingMachine()
+    }
 
     def "should display 'insert a coin' when ready"() {
         when:
-        def vendingMachine = new VendingMachine()
-
+        vendingMachine = new VendingMachine()
         then:
-        vendingMachine.display == "INSERT A COIN"
-        vendingMachine.balance.value == 0
-        vendingMachine.coinReturnTray == []
+        assertVendingMachine(vendingMachine, "INSERT A COIN", "0", [])
     }
 
     def "should reject penny"() {
         given:
         Coin penny = PENNY
-        def vendingMachine = new VendingMachine()
-
         when:
         vendingMachine.insertCoin(penny)
-
         then:
-        vendingMachine.display == "INSERT A COIN"
-        vendingMachine.balance.value == 0
-        vendingMachine.coinReturnTray == [penny]
+        assertVendingMachine(vendingMachine, "INSERT A COIN", "0", [penny])
     }
 
-    def "should accept #validCoin"() {
-        given:
-        def vendingMachine = new VendingMachine()
-
+    def "should accept #validCoin"(Coin validCoin, String balance) {
         when:
         vendingMachine.insertCoin(validCoin)
-
         then:
-        vendingMachine.display == balance
-        vendingMachine.balance.value == new BigDecimal(balance)
-        vendingMachine.coinReturnTray == []
+        assertVendingMachine(vendingMachine, balance, [])
 
         where:
         validCoin | balance
@@ -50,20 +41,23 @@ class VendingMachineTest extends Specification {
     }
 
     def "should return sum of coins and invalid coins"() {
-        given:
-        def vendingMachine = new VendingMachine()
-
         when:
         coins.forEach(vendingMachine::insertCoin)
-
         then:
-        vendingMachine.display == balance
-        vendingMachine.balance.value == new BigDecimal(balance)
-        vendingMachine.coinReturnTray == returnedCoins
-
+        assertVendingMachine(vendingMachine, balance, returnedCoins)
         where:
         coins                                  | balance | returnedCoins
         [PENNY, NICKEL, PENNY, DIME]           | "0.15"  | [PENNY, PENNY]
         [QUARTER, NICKEL, NICKEL, PENNY, DIME] | "0.45"  | [PENNY]
+    }
+
+    private static void assertVendingMachine(VendingMachine vendingMachine, String balance, List<Coin> returnedCoins) {
+        assertVendingMachine(vendingMachine, balance, balance, returnedCoins)
+    }
+
+    private static void assertVendingMachine(VendingMachine vendingMachine, String display, String balance, List<Coin> returnedCoins) {
+        vendingMachine.display == display
+        vendingMachine.balance.value == new BigDecimal(balance)
+        vendingMachine.coinReturnTray == returnedCoins
     }
 }

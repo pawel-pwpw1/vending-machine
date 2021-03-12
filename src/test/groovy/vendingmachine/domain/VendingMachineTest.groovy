@@ -6,7 +6,7 @@ import static vendingmachine.domain.Coin.*
 
 class VendingMachineTest extends Specification {
     private static final String STARING_DISPLAY = "INSERT A COIN"
-    def vendingMachine
+    VendingMachine vendingMachine
 
     void setup() {
         vendingMachine = new VendingMachine()
@@ -50,6 +50,21 @@ class VendingMachineTest extends Specification {
         coins                                  | balance | returnedCoins
         [PENNY, NICKEL, PENNY, DIME]           | "0.15"  | [PENNY, PENNY]
         [QUARTER, NICKEL, NICKEL, PENNY, DIME] | "0.45"  | [PENNY]
+    }
+
+    def "should return product"(){
+        given:
+        Product product = Product.COLA
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        when:
+        vendingMachine.buy(product)
+        then:
+        vendingMachine.display == "THANK YOU"
+        vendingMachine.balance.value == 0
+        vendingMachine.product == product
     }
 
     private void assertVendingMachine(String balance, List<Coin> returnedCoins) {

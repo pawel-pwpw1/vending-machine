@@ -13,11 +13,20 @@ public class VendingMachine {
   private final List<Coin> coinReturnTray;
   private Money balance = money(0);
 
+  private Product product;
+
   public VendingMachine() {
     coinReturnTray = new ArrayList<>();
   }
 
+  public Product getProduct() {
+    return product;
+  }
+
   public String getDisplay() {
+    if (product != null) {
+      return "THANK YOU";
+    }
     if (getBalance().isZero()) {
       return "INSERT A COIN";
     }
@@ -45,5 +54,10 @@ public class VendingMachine {
     } else {
       balance = balance.add(coin.getMoney());
     }
+  }
+
+  public void buy(Product product) {
+    this.product = product;
+    balance = money(0);
   }
 }

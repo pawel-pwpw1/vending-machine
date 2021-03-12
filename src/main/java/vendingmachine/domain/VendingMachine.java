@@ -1,37 +1,49 @@
 package vendingmachine.domain;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 import static vendingmachine.domain.Money.money;
 
 public class VendingMachine {
 
-    private Set<Coin> coinReturnTray;
+  private List<Coin> coinReturnTray;
+  private Money balance = money(0);
 
-    public VendingMachine() {
-        coinReturnTray = new HashSet<>();
+  public VendingMachine() {
+    coinReturnTray = new ArrayList<>();
+  }
+
+  public String getDisplay() {
+    if (getBalance().isZero()) {
+      return "INSERT A COIN";
     }
 
-    public String getDisplay() {
-        if (getBalance().isZero()) {
-            return "INSERT A COIN";
-        }
+    return balance.toString();
+  }
 
-        return "zonk";
-    }
+  /**
+   * Current amount on display: sum of *valid* coins inserted, minus sold products, minus change
+   */
+  public Money getBalance() {
+    return balance;
+  }
 
-    /**
-     * Current amount on display:
-     * sum of *valid* coins inserted, minus sold products, minus change
-     */
-    public Money getBalance() {
-        return money(0);
-    }
+  /**
+   * @return unmodifiableSet
+   */
+  public List<Coin> getCoinReturnTray() {
+    return Collections.unmodifiableList(coinReturnTray);
+  }
 
-    /**
-     * @return unmodifiableSet
-     */
-    public Set<Coin> getCoinReturnTray() {
-        return Collections.unmodifiableSet(coinReturnTray);
+  public void insertCoin(Coin coin) {
+    if (coin == Coin.PENNY) {
+      coinReturnTray.add(coin);
+    } else {
+      balance = balance.add(coin.getMoney());
     }
+  }
 }

@@ -35,6 +35,9 @@ public class VendingMachine {
         return Collections.unmodifiableSet(coinReturnTray);
     }
 
-    public void insertCoins(Integer integer1, Integer integer2) {
+    public void insertCoins(int weight, int size) {
+        if (weight == Coin.PENNY.getWeight() && size == Coin.PENNY.getSize()) {
+            coinReturnTray.add(Coin.PENNY);
+        }
     }
 }

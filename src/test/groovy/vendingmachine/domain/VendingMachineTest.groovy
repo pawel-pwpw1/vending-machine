@@ -61,10 +61,10 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine.buy(product)
         then:
-        vendingMachine.display == "THANK YOU"
+        vendingMachine.displayAndUpdateState == "THANK YOU"
         vendingMachine.balance.value == 0
         vendingMachine.product == product
-        vendingMachine.display == STARTING_DISPLAY
+        vendingMachine.displayAndUpdateState == STARTING_DISPLAY
 
         where:
         coins                                | product
@@ -79,9 +79,9 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine.buy(product)
         then:
-        vendingMachine.display == toDisplayFirstTime
+        vendingMachine.displayAndUpdateState == toDisplayFirstTime
         vendingMachine.product == null
-        vendingMachine.display == toDisplayNext
+        vendingMachine.displayAndUpdateState == toDisplayNext
 
         where:
         coins    | product | toDisplayFirstTime | toDisplayNext
@@ -94,7 +94,7 @@ class VendingMachineTest extends Specification {
     }
 
     private void assertVendingMachine(String display, String balance, List<Coin> returnedCoins) {
-        vendingMachine.display == display
+        vendingMachine.displayAndUpdateState == display
         vendingMachine.balance.value == new BigDecimal(balance)
         vendingMachine.coinReturnTray == returnedCoins
     }

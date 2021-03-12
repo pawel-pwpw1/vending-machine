@@ -38,7 +38,7 @@ public class VendingMachine {
     return balance.toString();
   }
 
-  public String getDisplay() {
+  public String getDisplayAndUpdateState() {
     String actualDisplay = display;
     prepareNextState();
     return actualDisplay;

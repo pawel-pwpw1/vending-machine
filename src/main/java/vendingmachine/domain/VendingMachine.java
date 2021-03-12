@@ -6,8 +6,10 @@ import static vendingmachine.domain.ValidCoin.NICKEL;
 import static vendingmachine.domain.ValidCoin.QUARTER;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,6 +18,7 @@ public class VendingMachine {
   private Money balance;
   private final Set<Coin> coinReturnTray;
   private String display;
+  private List<Product> products;
 
   public VendingMachine() {
     this(money(0));
@@ -25,6 +28,7 @@ public class VendingMachine {
     coinReturnTray = new HashSet<>();
     balance = money;
     display = "INSERT A COIN";
+    products = new ArrayList<>();
   }
 
   public String getDisplay() {
@@ -37,7 +41,7 @@ public class VendingMachine {
         if (this.balance.isZero()) {
           display = "INSERT A COIN";
         } else {
-          display = "BALANCE "+ this.balance.toString();
+          display = "BALANCE " + this.balance.toString();
         }
       }
     }
@@ -55,6 +59,16 @@ public class VendingMachine {
    */
   public Set<Coin> getCoinReturnTray() {
     return Collections.unmodifiableSet(coinReturnTray);
+  }
+
+  public List<Product> getBoughtProducts() {
+    return Collections.unmodifiableList(products);
+  }
+
+  public List<Product> pickUpProducts() {
+    List<Product> productsToPickUp = List.copyOf(products);
+    products = new ArrayList<>();
+    return Collections.unmodifiableList(productsToPickUp);
   }
 
   public void insertCoin(Coin coin) {
@@ -79,11 +93,13 @@ public class VendingMachine {
   }
 
   public void buy(Product product) {
-    if (this.balance.subtract(product.getPrice()).getValue().compareTo(BigDecimal.ZERO) >= 0) {
-      this.balance = this.balance.subtract(product.getPrice());
-      this.display = "THANK YOU";
+    Money subtract = balance.subtract(product.getPrice());
+    if (subtract.getValue().compareTo(BigDecimal.ZERO) >= 0) {
+      balance = subtract;
+      display = "THANK YOU";
+      products.add(product);
     } else {
-      this.display = "PRICE " + product.getPrice().toString();
+      display = "PRICE " + product.getPrice().toString();
     }
   }
 }

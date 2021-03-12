@@ -15,6 +15,7 @@ class VendingMachineTest extends Specification {
         vendingMachine.display == "INSERT A COIN"
         vendingMachine.balance.value == 0
         vendingMachine.coinReturnTray == [] as Set
+        vendingMachine.getBoughtProducts() == []
     }
 
     def 'should reject pennies'() {
@@ -26,6 +27,7 @@ class VendingMachineTest extends Specification {
         then:
         vendingMachine.balance.value == 0
         vendingMachine.coinReturnTray == [coin] as Set
+        vendingMachine.getBoughtProducts() == []
     }
 
     @Unroll
@@ -39,6 +41,7 @@ class VendingMachineTest extends Specification {
         vendingMachine.balance.value == balance
         vendingMachine.coinReturnTray == [] as Set
         vendingMachine.display == 'BALANCE ' + balance.toString()
+        vendingMachine.getBoughtProducts() == []
 
 
         where:
@@ -61,6 +64,7 @@ class VendingMachineTest extends Specification {
         vendingMachine.display == 'THANK YOU'
         vendingMachine.coinReturnTray == [] as Set
         vendingMachine.display == 'INSERT A COIN'
+        vendingMachine.getBoughtProducts() == [product]
 
         where:
         product << [COLA, CHIPS, CANDY]
@@ -79,6 +83,7 @@ class VendingMachineTest extends Specification {
         vendingMachine.display == 'PRICE ' + product.price.toString()
         vendingMachine.coinReturnTray == [] as Set
         vendingMachine.display == 'INSERT A COIN'
+        vendingMachine.getBoughtProducts() == []
     }
 
     def 'should display PRICE if money is not enough'() {
@@ -94,6 +99,23 @@ class VendingMachineTest extends Specification {
         vendingMachine.balance.value == initialBalance
         vendingMachine.display == 'PRICE ' + product.price.toString()
         vendingMachine.coinReturnTray == [] as Set
-        vendingMachine.display == 'BALANCE ' +  initialBalance
+        vendingMachine.display == 'BALANCE ' + initialBalance
+        vendingMachine.getBoughtProducts() == []
+    }
+
+    def 'pick up products'(product) {
+        given:
+        def vendingMachine = new VendingMachine(product.price)
+        vendingMachine.buy(product)
+
+        when:
+        def result = vendingMachine.pickUpProducts();
+
+        then:
+        result == [product]
+        vendingMachine.getBoughtProducts() == []
+
+        where:
+        product << [COLA, CHIPS, CANDY]
     }
 }

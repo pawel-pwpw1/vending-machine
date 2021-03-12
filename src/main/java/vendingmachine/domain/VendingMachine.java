@@ -14,6 +14,7 @@ public class VendingMachine {
   private Money balance = money(0);
 
   private Product product;
+  private String display = "INSERT A COIN";
 
   public VendingMachine() {
     coinReturnTray = new ArrayList<>();
@@ -23,15 +24,30 @@ public class VendingMachine {
     return product;
   }
 
-  public String getDisplay() {
-    if (product != null) {
-      return "THANK YOU";
-    }
-    if (getBalance().isZero()) {
+  private void clear() {
+    balance = money(0);
+    display = prepareDisplayFromBalance();
+    coinReturnTray.clear();
+  }
+
+  private String prepareDisplayFromBalance() {
+    if (balance.isZero()) {
       return "INSERT A COIN";
     }
-
     return balance.toString();
+  }
+
+  public String getDisplay() {
+    if (display.equals("THANK YOU")) {
+      clear();
+      return "THANK YOU";
+    }
+    if (!display.equals(balance.toString())) {
+      String toReturn = display;
+      display = prepareDisplayFromBalance();
+      return toReturn;
+    }
+    return display;
   }
 
   /**
@@ -53,11 +69,17 @@ public class VendingMachine {
       coinReturnTray.add(coin);
     } else {
       balance = balance.add(coin.getMoney());
+      display = balance.toString();
     }
   }
 
   public void buy(Product product) {
-    this.product = product;
-    balance = money(0);
+    if (balance.isGreaterOrEqualThan(product.getPrice())) {
+      this.product = product;
+      balance = money(0);
+      display = "THANK YOU";
+    } else {
+      display = product.getPrice().toString();
+    }
   }
 }

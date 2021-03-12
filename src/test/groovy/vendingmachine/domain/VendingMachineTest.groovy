@@ -3,9 +3,12 @@ package vendingmachine.domain
 import spock.lang.Specification
 
 import static vendingmachine.domain.Coin.*
+import static vendingmachine.domain.Product.CANDY
+import static vendingmachine.domain.Product.CHIPS
+import static vendingmachine.domain.Product.COLA
 
 class VendingMachineTest extends Specification {
-    private static final String STARING_DISPLAY = "INSERT A COIN"
+    private static final String STARTING_DISPLAY = "INSERT A COIN"
     VendingMachine vendingMachine
 
     void setup() {
@@ -16,7 +19,7 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine = new VendingMachine()
         then:
-        assertVendingMachine(STARING_DISPLAY, "0", [])
+        assertVendingMachine(STARTING_DISPLAY, "0", [])
     }
 
     def "should reject penny"() {
@@ -25,7 +28,7 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine.insertCoin(penny)
         then:
-        assertVendingMachine(STARING_DISPLAY, "0", [penny])
+        assertVendingMachine(STARTING_DISPLAY, "0", [penny])
     }
 
     def "should accept #validCoin"(Coin validCoin, String balance) {
@@ -52,23 +55,42 @@ class VendingMachineTest extends Specification {
         [QUARTER, NICKEL, NICKEL, PENNY, DIME] | "0.45"  | [PENNY]
     }
 
-    def "should return product"(){
+    def "should return product"() {
         given:
-        Product product = Product.COLA
-        vendingMachine.insertCoin(QUARTER)
-        vendingMachine.insertCoin(QUARTER)
-        vendingMachine.insertCoin(QUARTER)
-        vendingMachine.insertCoin(QUARTER)
+        coins.forEach(vendingMachine::insertCoin)
         when:
         vendingMachine.buy(product)
         then:
         vendingMachine.display == "THANK YOU"
         vendingMachine.balance.value == 0
         vendingMachine.product == product
+        vendingMachine.display == STARTING_DISPLAY
+
+        where:
+        coins                                | product
+        [QUARTER, QUARTER, QUARTER, QUARTER] | COLA
+        [NICKEL, QUARTER, QUARTER, QUARTER]  | CANDY
+        [NICKEL, DIME, QUARTER, QUARTER]     | CHIPS
+    }
+
+    def "should not return product when not enough balance"() {
+        given:
+        coins.forEach(vendingMachine::insertCoin)
+        when:
+        vendingMachine.buy(product)
+        then:
+        vendingMachine.display == toDisplayFirstTime
+        vendingMachine.product == null
+        vendingMachine.display == toDisplayNext
+
+        where:
+        coins    | product | toDisplayFirstTime | toDisplayNext
+        []       | COLA    | "1.00"             | STARTING_DISPLAY
+        [NICKEL] | CANDY   | "0.65"             | "0.05"
     }
 
     private void assertVendingMachine(String balance, List<Coin> returnedCoins) {
-        assertVendingMachine( balance, balance, returnedCoins)
+        assertVendingMachine(balance, balance, returnedCoins)
     }
 
     private void assertVendingMachine(String display, String balance, List<Coin> returnedCoins) {

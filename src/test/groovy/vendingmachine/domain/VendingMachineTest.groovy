@@ -2,6 +2,8 @@ package vendingmachine.domain
 
 import spock.lang.Specification
 
+import java.util.logging.Handler
+
 import static vendingmachine.domain.Coin.*
 
 class VendingMachineTest extends Specification {
@@ -34,5 +36,65 @@ class VendingMachineTest extends Specification {
         [QUARTER]             | 0.25    | 0        | 'Total money: 0.25'
     }
 
+    def "should display 'Thank you' enough money is given"(List<Coin> coins, Product product) {
+
+        given:
+        def vendingMachine = new VendingMachine()
+        coins.forEach(vendingMachine::insertCoin)
+
+        when:
+        vendingMachine.choseProduct(product)
+
+        then:
+        vendingMachine.display == "THANK YOU"
+        vendingMachine.coinReturnTray == [] as List
+
+        where:
+        coins                                   | product
+        [QUARTER, QUARTER, QUARTER, QUARTER]    | Product.COLA
+        [DIME, DIME, QUARTER, QUARTER, QUARTER] | Product.CHIPS
+        [DIME, DIME, QUARTER, QUARTER, QUARTER] | Product.CANDY
+    }
+
+    def "should display 'INSERT COINS' when checked second time after successfull operation"() {
+
+        given:
+        def vendingMachine = new VendingMachine()
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        vendingMachine.insertCoin(QUARTER)
+        when:
+        vendingMachine.choseProduct(Product.COLA)
+        then:
+        vendingMachine.display == "THANK YOU"
+
+        and:
+        vendingMachine.display == "INSERT A COIN"
+        vendingMachine.balance.value == 0.00
+
+    }
+
+
+    def "should display amount of inserted money when is't not enough for product"() {
+
+        given:
+        def vendingMachine = new VendingMachine()
+        vendingMachine.insertCoin(QUARTER)
+
+        when:
+        vendingMachine.choseProduct(Product.COLA)
+
+        then:
+        vendingMachine.display == "INSERT A COIN"
+        vendingMachine.balance.value == 0.25
+
+        and:
+        vendingMachine.display == "Total money: 0.25"
+
+
+    }
 
 }

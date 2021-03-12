@@ -65,4 +65,19 @@ class VendingMachineTest extends Specification {
         where:
         product << [COLA, CHIPS, CANDY]
     }
+
+    def 'should display PRICE if no coin was inserted'() {
+        given:
+        def product = COLA;
+        def vendingMachine = new VendingMachine()
+
+        when:
+        vendingMachine.buy(product)
+
+        then:
+        vendingMachine.balance.value == 0
+        vendingMachine.display == 'PRICE ' + product.price.toString()
+        vendingMachine.coinReturnTray == [] as Set
+        vendingMachine.display == 'INSERT A COIN'
+    }
 }

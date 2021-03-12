@@ -28,7 +28,13 @@ public class VendingMachine {
   }
 
   public String getDisplay() {
-    return this.display;
+    try {
+      return this.display;
+    } finally {
+      if (display.equals("THANK YOU")) {
+        display = "INSERT A COIN";
+      }
+    }
   }
 
   /**
@@ -67,7 +73,7 @@ public class VendingMachine {
   }
 
   public void buy(Product product) {
-    if (this.balance.subtract(product.getPrice()).getValue().compareTo(BigDecimal.ZERO) >= 0){
+    if (this.balance.subtract(product.getPrice()).getValue().compareTo(BigDecimal.ZERO) >= 0) {
       this.balance = this.balance.subtract(product.getPrice());
       this.display = "THANK YOU";
     }

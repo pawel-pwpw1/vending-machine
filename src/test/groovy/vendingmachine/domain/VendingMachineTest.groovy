@@ -5,7 +5,8 @@ import spock.lang.Specification
 import static vendingmachine.domain.Coin.*
 
 class VendingMachineTest extends Specification {
-    def vendingMachine;
+    private static final String STARING_DISPLAY = "INSERT A COIN"
+    def vendingMachine
 
     void setup() {
         vendingMachine = new VendingMachine()
@@ -15,7 +16,7 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine = new VendingMachine()
         then:
-        assertVendingMachine(vendingMachine, "INSERT A COIN", "0", [])
+        assertVendingMachine(STARING_DISPLAY, "0", [])
     }
 
     def "should reject penny"() {
@@ -24,14 +25,14 @@ class VendingMachineTest extends Specification {
         when:
         vendingMachine.insertCoin(penny)
         then:
-        assertVendingMachine(vendingMachine, "INSERT A COIN", "0", [penny])
+        assertVendingMachine(STARING_DISPLAY, "0", [penny])
     }
 
     def "should accept #validCoin"(Coin validCoin, String balance) {
         when:
         vendingMachine.insertCoin(validCoin)
         then:
-        assertVendingMachine(vendingMachine, balance, [])
+        assertVendingMachine(balance, [])
 
         where:
         validCoin | balance
@@ -44,18 +45,18 @@ class VendingMachineTest extends Specification {
         when:
         coins.forEach(vendingMachine::insertCoin)
         then:
-        assertVendingMachine(vendingMachine, balance, returnedCoins)
+        assertVendingMachine(balance, returnedCoins)
         where:
         coins                                  | balance | returnedCoins
         [PENNY, NICKEL, PENNY, DIME]           | "0.15"  | [PENNY, PENNY]
         [QUARTER, NICKEL, NICKEL, PENNY, DIME] | "0.45"  | [PENNY]
     }
 
-    private static void assertVendingMachine(VendingMachine vendingMachine, String balance, List<Coin> returnedCoins) {
-        assertVendingMachine(vendingMachine, balance, balance, returnedCoins)
+    private void assertVendingMachine(String balance, List<Coin> returnedCoins) {
+        assertVendingMachine( balance, balance, returnedCoins)
     }
 
-    private static void assertVendingMachine(VendingMachine vendingMachine, String display, String balance, List<Coin> returnedCoins) {
+    private void assertVendingMachine(String display, String balance, List<Coin> returnedCoins) {
         vendingMachine.display == display
         vendingMachine.balance.value == new BigDecimal(balance)
         vendingMachine.coinReturnTray == returnedCoins

@@ -60,6 +60,7 @@ class VendingMachineTest extends Specification {
         vendingMachine.balance.value == 0
         vendingMachine.display == 'THANK YOU'
         vendingMachine.coinReturnTray == [] as Set
+        vendingMachine.display == 'INSERT A COIN'
 
         where:
         product << [COLA, CHIPS, CANDY]

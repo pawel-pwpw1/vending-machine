@@ -77,4 +77,8 @@ public class Money {
     public static BigDecimal round2(BigDecimal value) {
         return value.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
+
+    public Money subtract(Money money) {
+        return new Money(this.getValue().subtract(money.getValue()));
+    }
 }

@@ -5,6 +5,7 @@ import static vendingmachine.domain.ValidCoin.DIME;
 import static vendingmachine.domain.ValidCoin.NICKEL;
 import static vendingmachine.domain.ValidCoin.QUARTER;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -14,6 +15,7 @@ public class VendingMachine {
 
   private Money balance;
   private final Set<Coin> coinReturnTray;
+  private String display;
 
   public VendingMachine() {
     this(money(0));
@@ -22,14 +24,11 @@ public class VendingMachine {
   public VendingMachine(Money money) {
     coinReturnTray = new HashSet<>();
     balance = money;
+    display = "INSERT A COIN";
   }
 
   public String getDisplay() {
-    if (getBalance().isZero()) {
-      return "INSERT A COIN";
-    }
-
-    return "BALANCE " + getBalance().toString();
+    return this.display;
   }
 
   /**
@@ -49,6 +48,7 @@ public class VendingMachine {
   public void insertCoin(Coin coin) {
     if (isAcceptedCoin(coin)) {
       balance = balance.add(getMoneyFor(coin).orElseThrow());
+      this.display = "BALANCE " + balance;
     } else {
       coinReturnTray.add(coin);
     }
@@ -67,6 +67,9 @@ public class VendingMachine {
   }
 
   public void buy(Product product) {
-    // TODO implement this
+    if (this.balance.subtract(product.getPrice()).getValue().compareTo(BigDecimal.ZERO) >= 0){
+      this.balance = this.balance.subtract(product.getPrice());
+      this.display = "THANK YOU";
+    }
   }
 }

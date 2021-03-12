@@ -3,6 +3,8 @@ package vendingmachine.domain
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static vendingmachine.domain.Product.*
+
 class VendingMachineTest extends Specification {
 
     def "should display 'insert a coin' when ready"() {
@@ -44,5 +46,22 @@ class VendingMachineTest extends Specification {
         1      | 5    | 0.05
         2      | 10   | 0.10
         3      | 25   | 0.25
+    }
+
+    @Unroll
+    def 'should buy #product without change'(product) {
+        given:
+        def vendingMachine = new VendingMachine(product.price)
+
+        when:
+        vendingMachine.buy(product)
+
+        then:
+        vendingMachine.balance.value == 0
+        vendingMachine.display == 'THANK YOU'
+        vendingMachine.coinReturnTray == [] as Set
+
+        where:
+        product << [COLA, CHIPS, CANDY]
     }
 }

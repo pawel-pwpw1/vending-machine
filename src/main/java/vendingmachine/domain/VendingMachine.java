@@ -16,8 +16,12 @@ public class VendingMachine {
   private final Set<Coin> coinReturnTray;
 
   public VendingMachine() {
+    this(money(0));
+  }
+
+  public VendingMachine(Money money) {
     coinReturnTray = new HashSet<>();
-    balance = money(0);
+    balance = money;
   }
 
   public String getDisplay() {
@@ -60,5 +64,9 @@ public class VendingMachine {
 
   private Optional<Money> getMoneyFor(Coin coin) {
     return ValidCoin.getFor(coin.getWeight(), coin.getSize()).map(ValidCoin::getMoney);
+  }
+
+  public void buy(Product product) {
+    // TODO implement this
   }
 }
